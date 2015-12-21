@@ -1,0 +1,2 @@
+SCAD_BIN=	openscad
+SLICER_BIN=	env PATH="/home/darius/perl5/bin${PATH+:}${PATH}" PERL5LIB="/home/darius/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}" PERL_LOCAL_LIB_ROOT="/home/darius/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}" PERL_MB_OPT="--install_base \"/home/darius/perl5\"" PERL_MM_OPT="INSTALL_BASE=/home/darius/perl5" /home/darius/projects/Slic3r/slic3r.pl

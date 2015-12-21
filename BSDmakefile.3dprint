@@ -1,0 +1,26 @@
+NAME?=		${SCAD:R}
+VER!=		git rev-parse --short HEAD
+HOST!=		hostname -s
+
+STL=		${NAME}-${VER}.stl
+GCODE=		${NAME}-${VER}.gcode
+
+.MAIN:		${GCODE}
+
+.SUFFIXES:	.scad .stl .gcode
+
+${GCODE}:	${STL}
+	${SLICER_BIN} --output ${.TARGET} --load ${SLICER_CONFIG} ${.ALLSRC}
+
+${STL}:		${SCAD}
+	/usr/bin/time ${SCAD_BIN} -o ${.TARGET} ${.ALLSRC}
+
+clean:
+	rm -f ${STL} ${GCODE}
+
+
+copy: ${GCODE}
+	cp ${GCODE} ${SD_PATH}
+	diskutil eject ${SD_PATH}
+
+.sinclude "BSDmakefile.${HOST}"
