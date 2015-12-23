@@ -80,8 +80,10 @@ module blower() {
 			    translate([ringrad + ringwallthick / 2 + r, 0, 0]) circle(r = r);
 
 			// Hollow out horizontal shaft
-			translate([-shaftwidth / 2 + shaftwallthick, ringrad + shaftwallthick, shaftwallthick])
-			    cube([shaftwidth - shaftwallthick * 2, shaftlen - shaftwallthick * 2 * 0, riserdepth - shaftwallthick * 2]);
+			// XXX: Assumes riserdepth is <= shaftwidth
+			rshaft = (riserdepth - shaftwallthick * 2) / 2;
+			translate([0, ringrad + ringsize / 2, rshaft + shaftwallthick])
+			    rotate([270, 0, 0]) cylinder(r = rshaft, h = shaftlen);
 
 			// Hollow out riser
 			translate([-shaftwidth / 2 + shaftwallthick, ringrad + shaftlen + shaftwallthick, shaftwallthick])
@@ -94,7 +96,7 @@ module blower() {
 			}
 
 			// Cut away to view internals
-			//cube([ringrad + ringsize, ringrad + ringsize, ringsize]);
+			//cube([100, 100, 100]);
 		}
 	}
 }
