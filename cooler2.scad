@@ -17,7 +17,7 @@ screwofs = 20;
 // Radius of screw holes
 screwrad = 1.5;
 // Inner radius of cooler ring
-ringrad = 20;
+ringrad = 15;
 // Thickness of cooler ring
 ringsize = 6;
 // Thickness of cooler ring wall
@@ -33,7 +33,7 @@ shaftwidth = 17.3;
 // Depth of air shaft
 riserdepth = 12;
 // Length of shaft from outer radius of cooler ring
-shaftlen = 35;
+shaftlen = 25;
 // Height of riser for fan
 riserheight = 50;
 
@@ -43,9 +43,9 @@ stepthick = 2;
 stepofs = 6;
 
 // Height clamp mates with riser
-clampofs = 25;
+clampofs = 22;
 
-res = 180;
+res = 90;
 
 module blower() {
 	difference() {
@@ -67,7 +67,7 @@ module blower() {
 			translate([-shaftwidth / 2, ringrad + shaftlen, riserheight - stepofs - stepthick])
 			    polyhedron(points = [[0, 0, 0], [shaftwidth, 0, 0], [shaftwidth, riserdepth, 0], [0, riserdepth, 0],
 				    [-stepthick, -stepthick, stepthick], [shaftwidth + stepthick, -stepthick, stepthick], [shaftwidth + stepthick, riserdepth + stepthick, stepthick], [-stepthick, riserdepth + stepthick, stepthick]],
-				    faces = [[1, 0, 4, 5], [2, 1, 5, 6], [3, 2, 6, 7], [7, 4, 0, 3]]);
+				    faces = [[1, 0, 4, 5], [2, 1, 5, 6], [3, 2, 6, 7], [7, 4, 0, 3], [0, 1, 2, 3], [7, 6, 5, 4]]);
 
 			// Place clamp
 			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
@@ -91,8 +91,8 @@ module blower() {
 
 			// Blow holes
 			for (i = [0:numholes]) {
-				rotate([0, 0, (i + 1) * 360 / numholes]) translate([ringrad - 0.5, 0, ringsize / 2])
-				    rotate([0, 90, 0]) cylinder(r = (ringsize - ringwallthick) / 2, h = ringwallthick, $fn = res);
+				rotate([0, 0, (i + 1) * 360 / numholes]) translate([ringrad - 0.5, 0, ringsize / 2 - 3])
+				    rotate([0, 45, 0]) cylinder(r = (ringsize - ringwallthick) / 2, h = ringwallthick, $fn = res);
 			}
 
 			// Cut away to view internals
@@ -112,7 +112,7 @@ module clamp() {
 				[clampwidth / 2 + shaftwidth / 2, 0, -clampofs + riserdepth],
 				[clampwidth / 2 + shaftwidth / 2, riserdepth, -clampofs + riserdepth],
 				[clampwidth / 2 - shaftwidth / 2, riserdepth, -clampofs + riserdepth]],
-			    faces = [[0, 1, 5, 4], [1, 2, 6, 5], [7, 6, 2, 3], [4, 7, 3, 0]]);
+			    faces = [[0, 1, 5, 4], [1, 2, 6, 5], [7, 6, 2, 3], [4, 7, 3, 0], [0, 1, 2, 3], [7, 6, 5, 4]]);
 
 		}
 		union() {
