@@ -45,7 +45,7 @@ stepofs = 6;
 // Height clamp mates with riser
 clampofs = 25;
 
-res = 30;
+res = 180;
 
 module blower() {
 	difference() {
@@ -104,6 +104,14 @@ module clamp() {
 		union() {
 			// Main block
 			cube([clampwidth, clampdepth, acrylthick + 2 * clampover]);
+			// Angle to make it easier to print (cheats and uses shaftwidth, clampofs and riserdepth)
+			polyhedron(points = [[0, 0, 0], [clampwidth, 0, 0], [clampwidth, clampdepth, 0], [0, clampdepth, 0],
+				[clampwidth / 2 - shaftwidth / 2, 0, -clampofs + riserdepth],
+				[clampwidth / 2 + shaftwidth / 2, 0, -clampofs + riserdepth],
+				[clampwidth / 2 + shaftwidth / 2, riserdepth, -clampofs + riserdepth],
+				[clampwidth / 2 - shaftwidth / 2, riserdepth, -clampofs + riserdepth]],
+			    faces = [[0, 1, 5, 4], [1, 2, 6, 5], [7, 6, 2, 3], [4, 7, 3, 0]]);
+
 		}
 		union() {
 			// Notch
