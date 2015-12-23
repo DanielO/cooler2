@@ -16,22 +16,24 @@ notchdepth = 8;
 screwofs = 20;
 // Radius of screw holes
 screwrad = 1.5;
-// Outer radius of cooler ring
-ringrad = 25;
+// Inner radius of cooler ring
+ringrad = 20;
 // Thickness of cooler ring
-ringsize = 4;
+ringsize = 6;
 // Thickness of cooler ring wall
-wallthick = 1;
+ringwallthick = 2;
 // Number of air holes
-numholes = 16;
+numholes = 10;
 // Size of air holes
-holesize = wallthick / 2;
+holesize = ringwallthick / 2;
+// Thickness of cooler ring wall
+shaftwallthick = 1.5;
 // Width of air shaft
 shaftwidth = 17.3;
 // Depth of air shaft
 riserdepth = 12;
 // Length of shaft from outer radius of cooler ring
-shaftlen = 30;
+shaftlen = 35;
 // Height of riser for fan
 riserheight = 50;
 
@@ -40,7 +42,10 @@ stepthick = 2;
 // Offset below top of riser for step
 stepofs = 6;
 
-res = 180;
+// Height clamp mates with riser
+clampofs = 25;
+
+res = 30;
 
 module blower() {
 	difference() {
@@ -58,26 +63,38 @@ module blower() {
 			// Step to rest fan on
 			translate([-shaftwidth / 2 - stepthick, ringrad + shaftlen - stepthick, riserheight - stepofs])
 			    cube([shaftwidth + stepthick * 2, riserdepth + stepthick * 2, stepthick]);
+			// Angle to make easier to print
+			translate([-shaftwidth / 2, ringrad + shaftlen, riserheight - stepofs - stepthick])
+			    polyhedron(points = [[0, 0, 0], [shaftwidth, 0, 0], [shaftwidth, riserdepth, 0], [0, riserdepth, 0],
+				    [-stepthick, -stepthick, stepthick], [shaftwidth + stepthick, -stepthick, stepthick], [shaftwidth + stepthick, riserdepth + stepthick, stepthick], [-stepthick, riserdepth + stepthick, stepthick]],
+				    faces = [[1, 0, 4, 5], [2, 1, 5, 6], [3, 2, 6, 7], [7, 4, 0, 3]]);
+
+			// Place clamp
+			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
 		}
 
 		union() {
 			// Hollow out ring
-			translate([0, 0, wallthick / 2]) rotate_extrude(angle = 360, convexity = 2, $fn = res)
-			    translate([ringrad + wallthick / 2, 0, 0]) square([ringsize - wallthick, ringsize - wallthick]);
+			r = (ringsize - ringwallthick) / 2;
+			translate([0, 0, ringwallthick / 2 + r]) rotate_extrude(angle = 360, convexity = 2, $fn = res)
+			    translate([ringrad + ringwallthick / 2 + r, 0, 0]) circle(r = r);
 
 			// Hollow out horizontal shaft
-			translate([-shaftwidth / 2 + wallthick, ringrad + wallthick, wallthick])
-			    cube([shaftwidth - wallthick * 2, shaftlen - wallthick * 2 * 0, riserdepth - wallthick * 2]);
+			translate([-shaftwidth / 2 + shaftwallthick, ringrad + shaftwallthick, shaftwallthick])
+			    cube([shaftwidth - shaftwallthick * 2, shaftlen - shaftwallthick * 2 * 0, riserdepth - shaftwallthick * 2]);
 
 			// Hollow out riser
-			translate([-shaftwidth / 2 + wallthick, ringrad + shaftlen + wallthick, wallthick])
-			    cube([shaftwidth - wallthick * 2, riserdepth - wallthick * 2, riserheight - wallthick]);
+			translate([-shaftwidth / 2 + shaftwallthick, ringrad + shaftlen + shaftwallthick, shaftwallthick])
+			    cube([shaftwidth - shaftwallthick * 2, riserdepth - shaftwallthick * 2, riserheight - shaftwallthick]);
 
 			// Blow holes
 			for (i = [0:numholes]) {
-				rotate([0, 0, i * 360 / numholes]) translate([ringrad - 0.5, 0, ringsize / 2])
-				    rotate([0, 90, 0]) cylinder(r = (ringsize - wallthick) / 2, h = wallthick, $fn = res);
+				rotate([0, 0, (i + 1) * 360 / numholes]) translate([ringrad - 0.5, 0, ringsize / 2])
+				    rotate([0, 90, 0]) cylinder(r = (ringsize - ringwallthick) / 2, h = ringwallthick, $fn = res);
 			}
+
+			// Cut away to view internals
+			//cube([ringrad + ringsize, ringrad + ringsize, ringsize]);
 		}
 	}
 }
@@ -100,6 +117,4 @@ module clamp() {
 	}
 }
 
-//clamp();
-//translate([0, 50, 0])
 blower();
