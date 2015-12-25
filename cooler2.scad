@@ -33,7 +33,7 @@ shaftwidth = 17.3;
 // Depth of air shaft
 riserdepth = 12;
 // Length of shaft from outer radius of cooler ring
-shaftlen = 25;
+shaftlen = 35;
 // Height of riser for fan
 riserheight = 50;
 
@@ -94,7 +94,7 @@ module blower() {
 			// Blow holes
 			for (i = [0:numholes]) {
 				rotate([0, 0, (i + 1) * 360 / numholes]) translate([ringrad - 0.5, 0, ringsize / 2 - 3])
-				    rotate([0, 45, 0]) cylinder(r = (ringsize - ringwallthick) / 2, h = ringwallthick, $fn = res);
+				    rotate([0, 45, 0]) cylinder(r = (ringsize - ringwallthick) / 2, h = ringwallthick * 2, $fn = res);
 			}
 
 			// Cut away to view internals
