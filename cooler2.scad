@@ -112,8 +112,8 @@ module clamp() {
 			polyhedron(points = [[0, 0, 0], [clampwidth, 0, 0], [clampwidth, clampdepth, 0], [0, clampdepth, 0],
 				[clampwidth / 2 - shaftwidth / 2, 0, -clampofs + riserdepth],
 				[clampwidth / 2 + shaftwidth / 2, 0, -clampofs + riserdepth],
-				[clampwidth / 2 + shaftwidth / 2, riserdepth / 5, -clampofs + riserdepth],
-				[clampwidth / 2 - shaftwidth / 2, riserdepth / 5, -clampofs + riserdepth]],
+				[clampwidth / 2 + shaftwidth / 2, riserdepth / 2, -clampofs + riserdepth],
+				[clampwidth / 2 - shaftwidth / 2, riserdepth / 2, -clampofs + riserdepth]],
 			    faces = [[0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7], [0, 3, 2, 1], [4, 5, 6, 7]]);
 
 		}
