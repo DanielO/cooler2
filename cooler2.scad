@@ -47,13 +47,13 @@ clampofs = 22;
 
 gaugeblockheight = 16.5;
 gaugeblockwidth = 20;
-gaugeblockdepth = 24;
+gaugeblockdepth = 29.2;
 gaugescrewrad = 3.2;
 gaugescrewrecess = 2;
-gaugescrewdepth = 6.2;
+gaugescrewdepth = 11.4;
 gaugeslotwidth = 5.2;
 gaugeslotheight = 16.5;
-gaugeslotdepth = 13.7;
+gaugeslotdepth = 19.1;
 
 res = 90;
 
