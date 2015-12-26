@@ -121,10 +121,16 @@ module clamp() {
 			// Notch
 			translate([(clampwidth - notchwidth) / 2, clampdepth - notchdepth, clampover])
 			    cube([notchwidth, notchdepth, acrylthick]);
+			// Screw holes
+			translate([clampwidth / 2 - screwofs, clampdepth / 2, acrylthick / 2 + clampover])
+			    rotate([90, 0, 0]) cylinder(h = clampdepth / 2, r = screwrad, $fn = res);
+			translate([clampwidth / 2 + screwofs, clampdepth / 2, acrylthick / 2 + clampover])
+			    rotate([90, 0, 0]) cylinder(h = clampdepth / 2, r = screwrad, $fn = res);
+			// Screw recess
 			translate([clampwidth / 2 - screwofs, clampdepth, acrylthick / 2 + clampover])
-			    rotate([90, 0, 0]) cylinder(h = clampdepth, r = screwrad, $fn = res);
+			    rotate([90, 0, 0]) cylinder(h = clampdepth / 2, r = screwrad * 2, $fn = res);
 			translate([clampwidth / 2 + screwofs, clampdepth, acrylthick / 2 + clampover])
-			    rotate([90, 0, 0]) cylinder(h = clampdepth, r = screwrad, $fn = res);
+			    rotate([90, 0, 0]) cylinder(h = clampdepth / 2, r = screwrad * 2, $fn = res);
 		}
 	}
 }
