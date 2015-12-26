@@ -87,8 +87,8 @@ module blower() {
 			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
 
 			// Depth gauge holder
-			translate([-15, 70, gaugeriserofs]) rotate([0, 0, 180]) gauge_holder();
-			translate([-28, 36.5, gaugeriserofs - 26 + 10]) cube([10, 15, 32.5]);
+			//translate([-15, 70, gaugeriserofs]) rotate([0, 0, 180]) gauge_holder();
+			//translate([-28, 36.5, gaugeriserofs - 26 + 10]) cube([10, 15, 32.5]);
 		}
 
 		union() {
