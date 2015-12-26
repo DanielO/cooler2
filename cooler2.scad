@@ -6,7 +6,7 @@ clampdepth = 15;
 
 // Thickness of acrylic
 acrylthick = 8.5;
-// Amount the clamp is thicker than the acrylic
+// Amount the clamp is thicker than the acrylic (each side)
 clampover = 1.5;
 // Width of notch
 notchwidth = 12;
@@ -43,7 +43,7 @@ stepthick = 2;
 stepofs = 6;
 
 // Height clamp mates with riser
-clampofs = 22;
+clampofs = 20;
 
 gaugeblockheight = 16.5;
 gaugeblockwidth = 20;
@@ -55,6 +55,8 @@ gaugeslotwidth = 5.2;
 gaugeslotheight = 16.5;
 gaugeslotdepth = 19.1;
 
+gaugeriserofs = riserheight - 4;
+gaugeriserheight = 19;
 res = 90;
 
 module blower() {
@@ -85,7 +87,8 @@ module blower() {
 			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
 
 			// Depth gauge holder
-			translate([50, 50, 0]) gauge_holder();
+			translate([-15, 70, gaugeriserofs]) rotate([0, 0, 180]) gauge_holder();
+			translate([-28, 36.5, gaugeriserofs - 26 + 10]) cube([10, 15, 32.5]);
 		}
 
 		union() {
@@ -163,5 +166,5 @@ module gauge_holder() {
 	}
 }
 
-//blower();
-gauge_holder();
+blower();
+//gauge_holder();
