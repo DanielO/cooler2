@@ -45,6 +45,16 @@ stepofs = 6;
 // Height clamp mates with riser
 clampofs = 22;
 
+gaugeblockheight = 16.5;
+gaugeblockwidth = 20;
+gaugeblockdepth = 24;
+gaugescrewrad = 3.2;
+gaugescrewrecess = 2;
+gaugescrewdepth = 6.2;
+gaugeslotwidth = 5.2;
+gaugeslotheight = 16.5;
+gaugeslotdepth = 13.7;
+
 res = 90;
 
 module blower() {
@@ -73,6 +83,9 @@ module blower() {
 
 			// Place clamp
 			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
+
+			// Depth gauge holder
+			translate([50, 50, 0]) gauge_holder();
 		}
 
 		union() {
@@ -135,4 +148,20 @@ module clamp() {
 	}
 }
 
-blower();
+module gauge_holder() {
+	difference() {
+		// Block to hold depth gauge
+		cube([gaugeblockwidth, gaugeblockdepth, gaugeblockheight]);
+		union() {
+			// Slot it goes into
+			translate([(gaugeblockwidth - gaugeslotwidth) / 2, 0, (gaugeblockheight - gaugeslotheight) / 2]) cube([gaugeslotwidth, gaugeslotdepth, gaugeslotheight]);
+			// Screw hole
+			translate([0, gaugescrewdepth, gaugeblockheight / 2]) rotate([0, 90, 0]) cylinder(r = gaugescrewrad, h = gaugeblockwidth);
+			// Recess
+			translate([0, gaugescrewdepth, gaugeblockheight / 2]) rotate([0, 90, 0]) cylinder(r = gaugescrewrad * 1.5, h = gaugescrewrecess);
+		}
+	}
+}
+
+//blower();
+gauge_holder();
