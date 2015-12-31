@@ -33,7 +33,7 @@ shaftwidth = 17.3;
 // Depth of air shaft
 riserdepth = 12;
 // Length of shaft from outer radius of cooler ring
-shaftlen = 35;
+shaftlen = 50 - ringrad;
 // Height of riser for fan
 riserheight = 50;
 
