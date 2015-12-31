@@ -32,8 +32,10 @@ shaftwallthick = 1.5;
 shaftwidth = 17.3;
 // Depth of air shaft
 riserdepth = 12;
+// Offset from hotend centre to riser
+riserofs = 50;
 // Length of shaft from outer radius of cooler ring
-shaftlen = 50 - ringrad;
+shaftlen = riserofs - ringrad;
 // Height of riser for fan
 riserheight = 50;
 
