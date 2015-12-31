@@ -17,7 +17,7 @@ screwofs = 20;
 // Radius of screw holes
 screwrad = 1.5;
 // Inner radius of cooler ring
-ringrad = 15;
+ringrad = 21;
 // Thickness of cooler ring
 ringsize = 6;
 // Thickness of cooler ring wall
