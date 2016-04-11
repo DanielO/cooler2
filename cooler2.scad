@@ -12,6 +12,9 @@ clampover = 1.5;
 notchwidth = 12;
 // Depth of notch
 notchdepth = 8;
+// Bump to hold fan on better
+bumpsize = 0.5;
+numbumps = 5;
 // Screw offset from center (left and right)
 screwofs = 20;
 // Radius of screw holes
@@ -47,18 +50,13 @@ stepofs = 6;
 // Height clamp mates with riser
 clampofs = 20;
 
-gaugeblockheight = 16.5;
-gaugeblockwidth = 20;
-gaugeblockdepth = 29.2;
-gaugescrewrad = 3.2;
-gaugescrewrecess = 2;
-gaugescrewdepth = 11.4;
-gaugeslotwidth = 5.2;
-gaugeslotheight = 16.5;
-gaugeslotdepth = 19.1;
+// Radius of hole for inductive sensor
+sensorholerad = 9;
+// Radius of mount for sensor
+sensormntrad = 15;
+// Thickness of mount
+sensorthick = acrylthick + 2 * clampover;
 
-gaugeriserofs = riserheight - 4;
-gaugeriserheight = 19;
 res = 90;
 
 module blower() {
@@ -78,19 +76,29 @@ module blower() {
 			translate([-shaftwidth / 2 - stepthick, ringrad + shaftlen - stepthick, riserheight - stepofs])
 			    cube([shaftwidth + stepthick * 2, riserdepth + stepthick * 2, stepthick]);
 
+			// Bumps to hold the fan in place more firmly
+			for (i = [0:numbumps - 1]) {
+				xofs = -shaftwidth / 2 + bumpsize + i / (numbumps - 1) * (shaftwidth - bumpsize * 2);
+				zofs1 = riserheight - stepofs + bumpsize + stepthick + i / (numbumps - 1) * (stepofs - bumpsize * 2 - stepthick);
+				zofs2 = riserheight - stepofs + bumpsize + stepthick + (numbumps - i - 1) / (numbumps - 1) * (stepofs - bumpsize * 2 - stepthick);
+				translate([xofs, ringrad + shaftlen, zofs1])
+				    rotate([180, 0, 0]) bump();
+				translate([xofs, ringrad + shaftlen + riserdepth, zofs2])
+				    bump();
+			}
 			// Angle to make easier to print
+			/*
 			anglez = stepthick * 3;
 			translate([-shaftwidth / 2, ringrad + shaftlen, riserheight - stepofs - anglez])
 			    polyhedron(points = [[0, 0, 0], [shaftwidth, 0, 0], [shaftwidth, riserdepth, 0], [0, riserdepth, 0],
 				    [-stepthick, -stepthick, anglez], [shaftwidth + stepthick, -stepthick, anglez], [shaftwidth + stepthick, riserdepth + stepthick, anglez], [-stepthick, riserdepth + stepthick, anglez]],
 				faces = [[1, 0, 4, 5], [2, 1, 5, 6], [3, 2, 6, 7], [7, 4, 0, 3], [0, 1, 2, 3], [7, 6, 5, 4]]);
-
+*/
 			// Place clamp
 			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
 
-			// Depth gauge holder
-			//translate([-15, 70, gaugeriserofs]) rotate([0, 0, 180]) gauge_holder();
-			//translate([-28, 36.5, gaugeriserofs - 26 + 10]) cube([10, 15, 32.5]);
+			// Sensor holder
+			sensor_mount();
 		}
 
 		union() {
@@ -127,12 +135,14 @@ module clamp() {
 			// Main block
 			cube([clampwidth, clampdepth, acrylthick + 2 * clampover]);
 			// Angle to make it easier to print (cheats and uses shaftwidth, clampofs and riserdepth)
+			/*
 			polyhedron(points = [[0, 0, 0], [clampwidth, 0, 0], [clampwidth, clampdepth, 0], [0, clampdepth, 0],
 				[clampwidth / 2 - shaftwidth / 2, 0, -clampofs + riserdepth],
 				[clampwidth / 2 + shaftwidth / 2, 0, -clampofs + riserdepth],
 				[clampwidth / 2 + shaftwidth / 2, riserdepth / 2, -clampofs + riserdepth],
 				[clampwidth / 2 - shaftwidth / 2, riserdepth / 2, -clampofs + riserdepth]],
 			    faces = [[0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7], [0, 3, 2, 1], [4, 5, 6, 7]]);
+			    */
 
 		}
 		union() {
@@ -153,20 +163,22 @@ module clamp() {
 	}
 }
 
-module gauge_holder() {
-	difference() {
-		// Block to hold depth gauge
-		cube([gaugeblockwidth, gaugeblockdepth, gaugeblockheight]);
-		union() {
-			// Slot it goes into
-			translate([(gaugeblockwidth - gaugeslotwidth) / 2, 0, (gaugeblockheight - gaugeslotheight) / 2]) cube([gaugeslotwidth, gaugeslotdepth, gaugeslotheight]);
-			// Screw hole
-			translate([0, gaugescrewdepth, gaugeblockheight / 2]) rotate([0, 90, 0]) cylinder(r = gaugescrewrad, h = gaugeblockwidth);
-			// Recess
-			translate([0, gaugescrewdepth, gaugeblockheight / 2]) rotate([0, 90, 0]) cylinder(r = gaugescrewrad * 1.5, h = gaugescrewrecess);
+module sensor_mount() {
+	// XXX: -1 fudge otherwise it collides with the screwhead cut out
+	translate([-clampwidth / 2 - sensorholerad - 1, clampdepth + shaftlen, clampofs]) {
+		difference() {
+			cylinder(r = sensormntrad, h = sensorthick, $fn = res);
+			cylinder(r = sensorholerad, h = sensorthick, $fn = res);
 		}
 	}
 }
 
+// Create a bump perpendicular to the XZ plane extending into +Y
+module bump() {
+	difference() {
+		sphere(r = bumpsize, $fn = res / 2);
+		translate([-bumpsize, -bumpsize, -bumpsize]) cube([bumpsize * 2, bumpsize, bumpsize * 2]);
+	}
+}
+
 blower();
-//gauge_holder();
