@@ -73,14 +73,14 @@ module blower() {
 			translate([-shaftwidth / 2, ringrad + shaftlen, 0]) cube([shaftwidth, riserdepth, riserheight]);
 
 			// Step to rest fan on
-			translate([-shaftwidth / 2 - stepthick, ringrad + shaftlen - stepthick, riserheight - stepofs])
+			translate([-shaftwidth / 2 - stepthick, ringrad + shaftlen - stepthick, riserheight - stepofs - stepthick])
 			    cube([shaftwidth + stepthick * 2, riserdepth + stepthick * 2, stepthick]);
 
 			// Bumps to hold the fan in place more firmly
 			for (i = [0:numbumps - 1]) {
 				xofs = -shaftwidth / 2 + bumpsize + i / (numbumps - 1) * (shaftwidth - bumpsize * 2);
-				zofs1 = riserheight - stepofs + bumpsize + stepthick + i / (numbumps - 1) * (stepofs - bumpsize * 2 - stepthick);
-				zofs2 = riserheight - stepofs + bumpsize + stepthick + (numbumps - i - 1) / (numbumps - 1) * (stepofs - bumpsize * 2 - stepthick);
+				zofs1 = riserheight - stepofs + bumpsize + i / (numbumps - 1) * (stepofs - bumpsize * 2);
+				zofs2 = riserheight - stepofs + bumpsize  + (numbumps - i - 1) / (numbumps - 1) * (stepofs - bumpsize * 2);
 				translate([xofs, ringrad + shaftlen, zofs1])
 				    rotate([180, 0, 0]) bump();
 				translate([xofs, ringrad + shaftlen + riserdepth, zofs2])
