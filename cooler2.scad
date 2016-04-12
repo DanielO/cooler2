@@ -51,9 +51,9 @@ stepofs = 6;
 clampofs = 20;
 
 // Radius of hole for inductive sensor
-sensorholerad = 9;
+sensorholerad = 9.5;
 // Radius of mount for sensor
-sensormntrad = 15;
+sensormntrad = 15.25;
 // Thickness of mount
 sensorthick = acrylthick + 2 * clampover;
 
@@ -86,6 +86,13 @@ module blower() {
 				translate([xofs, ringrad + shaftlen + riserdepth, zofs2])
 				    bump();
 			}
+			// Angle to make easier to print
+			anglez = stepthick * 3;
+			translate([-shaftwidth / 2, ringrad + shaftlen, riserheight - stepofs - anglez - stepthick])
+			    polyhedron(points = [[0, 0, 0], [shaftwidth, 0, 0], [shaftwidth, riserdepth, 0], [0, riserdepth, 0],
+				    [-stepthick, -stepthick, anglez], [shaftwidth + stepthick, -stepthick, anglez], [shaftwidth + stepthick, riserdepth + stepthick, anglez], [-stepthick, riserdepth + stepthick, anglez]],
+				faces = [[1, 0, 4, 5], [2, 1, 5, 6], [3, 2, 6, 7], [7, 4, 0, 3], [0, 1, 2, 3], [7, 6, 5, 4]]);
+
 			// Place clamp
 			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
 
@@ -126,6 +133,13 @@ module clamp() {
 		union() {
 			// Main block
 			cube([clampwidth, clampdepth, acrylthick + 2 * clampover]);
+			// Angle to make it easier to print (cheats and uses shaftwidth, clampofs and riserdepth)
+			polyhedron(points = [[0, 0, 0], [clampwidth, 0, 0], [clampwidth, clampdepth, 0], [0, clampdepth, 0],
+				[clampwidth / 2 - shaftwidth / 2, 0, -clampofs + riserdepth],
+				[clampwidth / 2 + shaftwidth / 2, 0, -clampofs + riserdepth],
+				[clampwidth / 2 + shaftwidth / 2, riserdepth / 2, -clampofs + riserdepth],
+				[clampwidth / 2 - shaftwidth / 2, riserdepth / 2, -clampofs + riserdepth]],
+			    faces = [[0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7], [0, 3, 2, 1], [4, 5, 6, 7]]);
 		}
 		union() {
 			// Notch
@@ -146,8 +160,8 @@ module clamp() {
 }
 
 module sensor_mount() {
-	// XXX: -1 fudge otherwise it collides with the screwhead cut out
-	translate([-clampwidth / 2 - sensorholerad - 1, clampdepth + shaftlen, clampofs]) {
+	// +2 is fudge factor so circle is held strongly
+	translate([-clampwidth / 2 - sensormntrad + 2, clampdepth + shaftlen, clampofs]) {
 		difference() {
 			cylinder(r = sensormntrad, h = sensorthick, $fn = res);
 			cylinder(r = sensorholerad, h = sensorthick, $fn = res);
