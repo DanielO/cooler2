@@ -8,6 +8,8 @@ clampdepth = 15;
 acrylthick = 8.5;
 // Amount the clamp is thicker than the acrylic (each side)
 clampover = 1.5;
+// Thickness of clamp
+clampthick = acrylthick + 2 * clampover;
 // Width of notch
 notchwidth = 12;
 // Depth of notch
@@ -50,12 +52,14 @@ stepofs = 6;
 // Height clamp mates with riser
 clampofs = 20;
 
+// Add mount for bed sensor
+sensor = 1;
 // Radius of hole for inductive sensor
 sensorholerad = 9.5;
 // Radius of mount for sensor
 sensormntrad = 15.25;
 // Thickness of mount
-sensorthick = acrylthick + 2 * clampover;
+sensorthick = clampthick;
 
 res = 90;
 
@@ -97,7 +101,8 @@ module blower() {
 			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
 
 			// Sensor holder
-			sensor_mount();
+			if (sensor)
+				sensor_mount();
 		}
 
 		union() {
@@ -132,7 +137,7 @@ module clamp() {
 	difference() {
 		union() {
 			// Main block
-			cube([clampwidth, clampdepth, acrylthick + 2 * clampover]);
+			cube([clampwidth, clampdepth, clampthick]);
 			// Angle to make it easier to print (cheats and uses shaftwidth, clampofs and riserdepth)
 			polyhedron(points = [[0, 0, 0], [clampwidth, 0, 0], [clampwidth, clampdepth, 0], [0, clampdepth, 0],
 				[clampwidth / 2 - shaftwidth / 2, 0, -clampofs + riserdepth],
