@@ -22,9 +22,9 @@ screwofs = 20;
 // Radius of screw holes
 screwrad = 1.5;
 // Inner radius of cooler ring
-ringrad = 21;
+ringrad = 18;
 // Thickness of cooler ring
-ringsize = 6;
+ringsize = 5;
 // Thickness of cooler ring wall
 ringwallthick = 2;
 // Number of air holes
@@ -38,7 +38,7 @@ shaftwidth = 17.3;
 // Depth of air shaft
 riserdepth = 12;
 // Offset from hotend centre to riser
-riserofs = 50;
+riserofs = 43.5;
 // Length of shaft from outer radius of cooler ring
 shaftlen = riserofs - ringrad;
 // Height of riser for fan
@@ -50,16 +50,34 @@ stepthick = 2;
 stepofs = 6;
 
 // Height clamp mates with riser
-clampofs = 20;
+clampofs = 19;
 
-// Add mount for bed sensor
-sensor = 1;
+// X offset of clamp
+clampxofs = -5;
+
+// Add mount for inductive bed sensor
+ind_sensor = 0;
 // Radius of hole for inductive sensor
-sensorholerad = 9.5;
+ind_sensorholerad = 9.5;
 // Radius of mount for sensor
-sensormntrad = 15.25;
+ind_sensormntrad = 15.25;
 // Thickness of mount
-sensorthick = clampthick;
+ind_sensorthick = clampthick;
+
+// Add mount for IR sensor
+ir_sensor = 1;
+// Screw radius
+ir_holerad = 1.35;
+// Hole centers
+ir_holespacing = 24;
+// Height to screw hole centres
+ir_sensorheight = 21.75;
+// Depth of bar holding sensor
+ir_bardepth = 10;
+// Height of bar holding sensor
+ir_barheight = 8;
+ir_barxofs = -12;
+ir_baryofs = 0;
 
 res = 90;
 
@@ -98,11 +116,15 @@ module blower() {
 				faces = [[1, 0, 4, 5], [2, 1, 5, 6], [3, 2, 6, 7], [7, 4, 0, 3], [0, 1, 2, 3], [7, 6, 5, 4]]);
 
 			// Place clamp
-			rotate([0, 0, 180]) translate([-clampwidth / 2, -shaftlen - ringrad - shaftwallthick, clampofs]) clamp();
+			rotate([0, 0, 180]) translate([-clampxofs + -clampwidth / 2, -shaftlen - ringrad, clampofs]) clamp();
 
-			// Sensor holder
-			if (sensor)
-				sensor_mount();
+			// Inductive sensor holder
+			if (ind_sensor)
+				ind_sensor_mount();
+
+			// IR sensor
+			if (ir_sensor)
+				ir_sensor_mount();
 		}
 
 		union() {
@@ -123,12 +145,15 @@ module blower() {
 
 			// Blow holes
 			for (i = [0:numholes]) {
-				rotate([0, 0, (i + 1) * 360 / numholes]) translate([ringrad - 0.5, 0, ringsize / 2 - 3])
-				    rotate([0, 45, 0]) cylinder(r = (ringsize - ringwallthick) / 2, h = ringwallthick * 2, $fn = res);
+				rotate([0, 0, (i + 1) * 360 / numholes]) translate([ringrad - 0.5, 0, 0])
+				    rotate([0, 45, 0]) cylinder(r = (ringsize - ringwallthick) / 2, h = ringwallthick * 1.5, $fn = res);
 			}
 
+			// IR sensor screw holes
+			if (ir_sensor)
+				ir_sensor_mount_screw_holes();
 			// Cut away to view internals
-			//translate([0, -100, 0]) cube([100, 200, 100]);
+			//translate([6, -100, 0]) cube([100, 200, 100]);
 		}
 	}
 }
@@ -138,12 +163,12 @@ module clamp() {
 		union() {
 			// Main block
 			cube([clampwidth, clampdepth, clampthick]);
-			// Angle to make it easier to print (cheats and uses shaftwidth, clampofs and riserdepth)
+			// Angle to make it easier to print (cheats and uses shaftwidth, clampofs, clampxofs and riserdepth)
 			polyhedron(points = [[0, 0, 0], [clampwidth, 0, 0], [clampwidth, clampdepth, 0], [0, clampdepth, 0],
-				[clampwidth / 2 - shaftwidth / 2, 0, -clampofs + riserdepth],
-				[clampwidth / 2 + shaftwidth / 2, 0, -clampofs + riserdepth],
-				[clampwidth / 2 + shaftwidth / 2, riserdepth / 2, -clampofs + riserdepth],
-				[clampwidth / 2 - shaftwidth / 2, riserdepth / 2, -clampofs + riserdepth]],
+				[clampwidth / 2 - shaftwidth / 2 + clampxofs, 0, -clampofs + riserdepth],
+				[clampwidth / 2 + shaftwidth / 2 + clampxofs, 0, -clampofs + riserdepth],
+				[clampwidth / 2 + shaftwidth / 2 + clampxofs, riserdepth / 2, -clampofs + riserdepth],
+				[clampwidth / 2 - shaftwidth / 2 + clampxofs, riserdepth / 2, -clampofs + riserdepth]],
 			    faces = [[0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7], [0, 3, 2, 1], [4, 5, 6, 7]]);
 		}
 		union() {
@@ -164,13 +189,36 @@ module clamp() {
 	}
 }
 
-module sensor_mount() {
+module ind_sensor_mount() {
 	// +2 is fudge factor so circle is held strongly
-	translate([-clampwidth / 2 - sensormntrad + 2, clampdepth + shaftlen, clampofs]) {
+	translate([-clampwidth / 2 - ind_sensormntrad + 2, clampdepth + shaftlen, clampofs]) {
 		difference() {
-			cylinder(r = sensormntrad, h = sensorthick, $fn = res);
-			cylinder(r = sensorholerad, h = sensorthick, $fn = res);
+			cylinder(r = ind_sensormntrad, h = ind_sensorthick, $fn = res);
+			cylinder(r = ind_sensorholerad, h = ind_sensorthick, $fn = res);
 		}
+	}
+}
+
+module ir_sensor_mount() {
+	_barwidth = ir_holerad * 6;
+	// Outside block
+	translate([- _barwidth - shaftwidth / 2 + ir_barxofs - ir_holespacing / 2, riserofs - ir_bardepth, ir_sensorheight]) {
+		cube([_barwidth, ir_bardepth, ir_barheight]);
+	}
+	// Inside block
+	// Skip otherwise it ocludes the mount hole
+	//translate([- _barwidth - shaftwidth / 2 + ir_barxofs + ir_holespacing / 2, riserofs - ir_bardepth, ir_sensorheight]) {
+	//	cube([_barwidth, ir_bardepth, ir_barheight]);
+	//}
+}
+
+module ir_sensor_mount_screw_holes() {
+	_barwidth = ir_holerad * 6;
+	translate([- _barwidth - shaftwidth / 2 + ir_barxofs - ir_holespacing / 2 + ir_holerad, riserofs - ir_bardepth, ir_sensorheight]) {
+		// Outside screwhole
+		translate([ir_holerad + 1, ir_bardepth, ir_barheight / 2]) rotate([90, 0, 0]) cylinder(r = ir_holerad, h = ir_bardepth , $fn = res);
+		// Inside screwhole
+		translate([ir_holerad + ir_holespacing + 1, ir_bardepth, ir_barheight / 2]) rotate([90, 0, 0]) cylinder(r = ir_holerad, h = clampthick, $fn = res);
 	}
 }
 
